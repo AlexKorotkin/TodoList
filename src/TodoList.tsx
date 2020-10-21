@@ -1,5 +1,7 @@
-import React, {ChangeEvent, KeyboardEvent, useState} from "react";
+import React, {ChangeEvent} from "react";
 import {FilterValueType, TasksType} from "./App";
+import {AddItemForm} from "./AddItemForm";
+import {EditableSpan} from "./EditableSpan";
 
 type PropsType = {
     id: string
@@ -10,60 +12,40 @@ type PropsType = {
     changeFilter: (value: FilterValueType, todoListId: string) => void
     addTask: (title: string, todoListId: string) => void
     changeTaskStatus: (id: string, isDone: boolean, todoListId: string) => void
+    changeTaskTitle: (id: string, newTitle: string, todoListId: string) => void
     removeTodolist: (todoListId: string)=> void
+    changeTodolistTitle:(id: string, newTitle: string) => void
 }
 
 export function TodoList(props: PropsType) {
 
-    let [newTaskTitle, setNewTaskTitle] = useState('');
-    let [error, setError] = useState< string | null >(null);
 
-    const onNewTitleChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
-        setNewTaskTitle(e.currentTarget.value)
-    };
-
-    const onKeyPressHandler = (e: KeyboardEvent<HTMLInputElement>) => {
-        setError(null)
-        if (e.key === 'Enter') {
-            props.addTask(newTaskTitle,props.id);
-            setNewTaskTitle('');
-        }
-    };
-
-    const addTask = () => {
-        if (newTaskTitle.trim() !== ''){
-            props.addTask(newTaskTitle.trim(), props.id);
-            setNewTaskTitle('');
-        }else {
-            setError('Вы не ввели данные');
-        }
-    };
     const  onAllClickHandler = () => props.changeFilter('all', props.id)
     const onActiveClickHandler = () => props.changeFilter('active', props.id);
     const onCompletedClickHandler = () => props.changeFilter('completed', props.id);
     const removeTodolist = () => props.removeTodolist(props.id)
+    const changeTodolistTitle = (newTitle:string) => props.changeTodolistTitle(props.id, newTitle)
+    const addTask = (title:string)=> props.addTask(title, props.id) //ф-ция обвертка
+
     return (
         <div>
-            <h3>{props.title}<button onClick={removeTodolist}>х</button></h3>
-            <div>
-                <input  value={newTaskTitle}
-                        onKeyPress={onKeyPressHandler}
-                       onChange={onNewTitleChangeHandler}
-                       className={ error ?'error': ''}
-                />
-                <button onClick={addTask}>+</button>
-                { error && <div className={'error-message'}>{error}</div>}
-            </div>
+            <h3><EditableSpan title={props.title} onChange={changeTodolistTitle}/>
+            <button onClick={removeTodolist}>х</button></h3>
+            <AddItemForm addItem={addTask}/>
             <ul>
                 {
                     props.tasks.map(t => {
                             const onRemoveHandler = () => props.removeTask(t.id, props.id)
-                             const onChangeHandler = (e:ChangeEvent<HTMLInputElement>) => (
-                                 props.changeTaskStatus(t.id, e.currentTarget.checked,props.id)
-                             )
+                             const onChangeStatusHandler = (e:ChangeEvent<HTMLInputElement>) => {
+                                 props.changeTaskStatus(t.id, e.currentTarget.checked, props.id)
+                             }
+                             const onChangeTitleHandler = (newValue: string) => {
+                                 props.changeTaskTitle(t.id, newValue, props.id)
 
-                            return <li className={t.isDone ? 'is-done':''} key={t.id}><input type="checkbox" onChange={onChangeHandler} checked={t.isDone}/>
-                                <span>{t.title}</span>
+                             }
+
+                            return <li className={t.isDone ? 'is-done':''} key={t.id}><input type="checkbox" onChange={onChangeStatusHandler} checked={t.isDone}/>
+                                <EditableSpan title={t.title} onChange={onChangeTitleHandler}/>
                                 <button onClick={onRemoveHandler}>x</button>
                             </li>
                         }
@@ -79,3 +61,4 @@ export function TodoList(props: PropsType) {
         </div>
     )
 }
+
