@@ -9,7 +9,7 @@ export type TasksType = {
     title: string
     isDone: boolean
 }
-type TaskStateType = {
+export type TaskStateType = {
     [key:string]:Array<TasksType>
 }
 export type TodoListsType = {

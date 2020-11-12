@@ -28,3 +28,5 @@ test('user reducer should change name of user', () => {
 
     expect(endState.name).toBe(newName);
 });
+
+
