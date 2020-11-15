@@ -84,9 +84,9 @@ function App() {
         }
         setTasks({...tasksObj});
     }
-    function changeTitle(id: string, newTitle: string, todolistId: string) {
+    function changeTaskTitle(id: string, newTitle: string, todolistId: string) {
         let todolistTasks = tasksObj[todolistId] // нашли массив тасок
-        let task = todolistTasks.find(t => t.id === todolistId)
+        let task = todolistTasks.find(t => t.id === id)
         if (task) {
             task.title = newTitle;
         }
@@ -129,7 +129,7 @@ function App() {
                             removeTask={removeTask}
                             addTask={addTask}
                             changeTaskStatus={changeStatus}
-                            changeTaskTitle={changeTitle}
+                            changeTaskTitle={changeTaskTitle}
                             changeFilter={changeFilter}
                             changeTodolistTitle ={changeTodolistTitle}
                         />
@@ -141,4 +141,6 @@ function App() {
 }
 
 export default App;
+
+
 
